@@ -1,7 +1,8 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import SearchIcon from './icons/SearchIcon';
 
-function NoteSearch({ onSearch }) {
+export default function NoteSearch({ onSearch, keyword }) {
     return (
         <div className="note-search">
             <span className="note-search-icon">
@@ -11,10 +12,14 @@ function NoteSearch({ onSearch }) {
                 type="text"
                 placeholder="Search note..."
                 className="input-box note-search-input"
+                value={keyword ?? ''}
                 onChange={onSearch}
             />
         </div>
     );
 }
 
-export default NoteSearch;
+NoteSearch.propTypes = {
+    onSearch: PropTypes.func.isRequired,
+    keyword: PropTypes.string,
+};

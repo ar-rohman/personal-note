@@ -1,3 +1,6 @@
 # Personal Note
 
-Dicoding Belajar Membuat Aplikasi Web dengan React
+Dicoding Belajar Fundamental Aplikasi Web dengan React
+
+## Submission 
+Membangun Single Page Application menggunakan React

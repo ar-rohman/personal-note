@@ -1,13 +1,15 @@
 import React from 'react';
-import NoteSearch from './NoteSearch';
+import { useNavigate } from 'react-router-dom';
 
-function AppHeader({ onSearch }) {
+export default function AppHeader() {
+    const navigate = useNavigate();
+    const goToHome = () => navigate('/');
+
     return (
         <header>
-            <h1 className="header-text">Personal Notes</h1>
-            <NoteSearch onSearch={onSearch} />
+            <h1 className="header-text" onClick={goToHome}>
+                Personal Note
+            </h1>
         </header>
     );
 }
-
-export default AppHeader;

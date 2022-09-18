@@ -12,6 +12,11 @@ body {
     color: #3f3f46;
 }
 
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
 .wrapper {
     max-width: 1280px;
     margin: auto;
@@ -30,22 +35,11 @@ header {
 .header-text {
     font-size: 1.5rem;
     font-weight: 700;
+    cursor: pointer;
 }
 
-.container {
+main {
     margin: 1rem;
-}
-
-.card {
-    background-color: #ffffff;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px 1px rgb(0 0 0 / 0.1);
-    padding: 2rem;
-}
-
-.card-header {
-    text-align: center;
-    margin-bottom: 1rem;
 }
 
 .form {
@@ -57,12 +51,6 @@ header {
 .form-group {
     display: flex;
     flex-direction: column;
-}
-
-.form-group-row {
-    display: flex;
-    align-items: center;
-    column-gap: 0.75rem;
 }
 
 .form-group label {
@@ -79,25 +67,33 @@ header {
     color: #71717a;
 }
 
+.input-box-body {
+    height: 16rem
+}
+
 .input-box:focus,
 .input-box:focus-visible {
     border-color: #8b5cf6;
-}
-
-.checkbox {
-    width: 1.5em;
-    height: 1.5em;
-    accent-color: #8b5cf6;
-}
-
-.checkbox:focus-visible {
-    outline-color: #8b5cf6;
 }
 
 .input-desc {
     font-size: 0.75rem;
     color: #71717a;
     text-align: end;
+}
+
+.error-message {
+    color: #fc0303;
+    font-weight: 600;
+    height: 1rem;
+}
+
+.error-input {
+    color: #fc0303;
+}
+
+.error-border-box {
+    border: 1.5px solid #fc0303;
 }
 
 .note-search {
@@ -117,6 +113,28 @@ header {
 
 .note-search-input {
     padding-left: 2.5rem;
+}
+
+.top-nav-wrapper {
+    display: flex;
+    flex-direction: column-reverse;
+    margin-bottom: 2rem;
+    gap: 1rem;
+}
+
+.top-nav-link {
+    align-self: flex-end;
+    display: flex;
+    column-gap: 0.5rem;
+    align-items: center;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.top-nav-link:hover,
+.top-nav-link:focus-visible {
+    color: #7c3aed;
+    cursor: pointer;
 }
 
 .button {
@@ -167,8 +185,7 @@ header {
 
 .add-note {
     display: flex;
-    justify-content: end;
-    margin-bottom: 2rem;
+    justify-content: flex-end;
 }
 
 .add-note-button {
@@ -185,7 +202,6 @@ header {
 .list-title {
     font-size: 1.5rem;
     font-weight: 600;
-    margin-bottom: 1rem;
 }
 
 .list-item {
@@ -203,11 +219,26 @@ header {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    color: #8b5cf6;
+}
+
+.list-item-title:hover,
+.list-item-title:focus-visible {
+    color: #7c3aed;
+    text-decoration: underline;
 }
 
 .list-item-date {
     font-size: 0.75rem;
     color: #71717a;
+}
+
+.list-item-body {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
 }
 
 .list-item-button {
@@ -219,36 +250,43 @@ header {
     row-gap: 1rem;
 }
 
-.modal-overlay {
-    position: fixed;
-    display: table;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.4);
+.detail-title {
+    font-size: 1.5rem;
+    font-weight: 500;
 }
 
-.modal-container {
-    display: table-cell;
-    vertical-align: middle;
-}
-
-.modal {
-    width: 90%;
-    height: 90%;
-    margin: 0 auto;
-    overflow: auto;
-}
-
-.modal-close {
-    width: 100%;
+.detail-button {
     display: flex;
-    justify-content: end;
-    margin-top: -1.5rem;
-    margin-left: 1.5rem;
+    flex-direction: column;
+    margin-top: 1rem;
+    width: 100%;
+    gap: 1rem;
+}
+
+.not-found {
+    width: 100%;
+    height: calc(100vh - 70px - 2rem);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    row-gap: 1rem;
+}
+
+.-ml-4 {
+    margin-left: -1rem;
+}
+
+.mb-4 {
+    margin-bottom: 1rem;
+}
+
+.mb-8 {
+    margin-bottom: 2rem;
+}
+
+.my-4 {
+    margin: 1rem 0;
 }
 
 @media (min-width: 640px) {
@@ -268,6 +306,11 @@ header {
     .add-note-button {
         width: auto;
     }
+
+    .top-nav-wrapper {
+        flex-direction: row;
+        justify-content: space-between;
+    }
 }
 
 @media (min-width: 768px) {
@@ -275,7 +318,7 @@ header {
         padding: 1rem 2rem;
     }
 
-    .container {
+    main {
         margin: 1rem 2rem;
         flex-direction: row;
     }
@@ -288,8 +331,10 @@ header {
         flex-direction: column;
     }
 
-    .modal {
-        width: 500px;
+    .detail-button {
+        flex-direction: row-reverse;
+        justify-content: flex-start;
+        width: auto;
     }
 }
 

@@ -1,8 +1,3 @@
-export const currentLocaleDateJSON = () => {
-    const date = new Date();
-    return new Date(date.getTime() - date.getTimezoneOffset() * 60000).toJSON();
-};
-
 export const formattedDate = (date) => {
     const options = {
         weekday: 'long',
