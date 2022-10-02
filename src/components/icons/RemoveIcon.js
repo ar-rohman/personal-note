@@ -1,6 +1,6 @@
 import React from 'react';
 
-function RemoveIcon() {
+export default function RemoveIcon() {
     return (
         <svg
             width="20"
@@ -31,5 +31,3 @@ function RemoveIcon() {
         </svg>
     );
 }
-
-export default RemoveIcon;

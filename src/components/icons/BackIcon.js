@@ -1,6 +1,6 @@
 import React from 'react';
 
-function BackIcon() {
+export default function BackIcon() {
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -13,5 +13,3 @@ function BackIcon() {
         </svg>
     );
 }
-
-export default BackIcon;

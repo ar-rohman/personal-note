@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import parser from 'html-react-parser';
+import LocalContext from '../contexts/LocalContext';
+import translate from '../utils/translate';
 import { formattedDate } from '../utils/date';
 import PrimaryButton from './buttons/PrimaryButton';
 import SecondaryButton from './buttons/SecondaryButton';
@@ -19,28 +21,30 @@ export default function NoteItem({
     onArchive,
     onUnarchive,
 }) {
+    const { language } = useContext(LocalContext);
+
     return (
         <section className="list-item">
             <Link to={`/detail/${id}`} className="list-item-title">
                 {title}
             </Link>
-            <p className="list-item-date">{formattedDate(createdAt)}</p>
+            <p className="list-item-date">{formattedDate(createdAt, language)}</p>
             <p className="list-item-body">{parser(body)}</p>
             <div className="list-item-button">
                 {archived ? (
                     <PrimaryButton onClick={() => onUnarchive(id)}>
                         <ArchiveRemoveIcon />
-                        <p>Unarchive</p>
+                        <p>{translate[language].unarchive}</p>
                     </PrimaryButton>
                 ) : (
                     <PrimaryButton onClick={() => onArchive(id)}>
                         <ArchiveAddIcon />
-                        <p>Archive</p>
+                        <p>{translate[language].archive}</p>
                     </PrimaryButton>
                 )}
                 <SecondaryButton onClick={() => onDelete(id)}>
                     <RemoveIcon />
-                    <p>Delete</p>
+                    <p>{translate[language].delete}</p>
                 </SecondaryButton>
             </div>
         </section>

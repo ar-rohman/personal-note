@@ -1,9 +1,9 @@
-export const formattedDate = (date) => {
+export const formattedDate = (date, local) => {
     const options = {
         weekday: 'long',
         year: 'numeric',
         month: 'long',
         day: 'numeric',
     };
-    return new Date(date).toLocaleDateString('id-ID', options);
+    return new Date(date).toLocaleDateString(local, options);
 };

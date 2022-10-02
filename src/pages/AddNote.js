@@ -1,119 +1,86 @@
-import React from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import autoBindReact from 'auto-bind/react';
-import { addNote } from '../utils/data';
+import { useInput } from '../hooks/useInput';
+import LocalContext from '../contexts/LocalContext';
+import { addNote } from '../utils/network-data';
+import translate from '../utils/translate';
 import PrimaryButton from '../components/buttons/PrimaryButton';
 import TertiaryButton from '../components/buttons/TertiaryButton';
 import BackIcon from '../components/icons/BackIcon';
 import SaveIcon from '../components/icons/SaveIcon';
 
-export default function AddNoteWrapper() {
+export default function AddNote() {
     const navigate = useNavigate();
+    const [isBodyEmpty, setBodyEmpty] = useState(false);
+    const [title, setTitle] = useInput();
+    const [body, setBody] = useState('');
+    const [character, setCharacter] = useState(50);
+    const { language } = useContext(LocalContext);
 
-    const saveNoteHandler = (data) => {
-        addNote(data);
-        navigate('/');
-    };
-    return <AddNote onSaveNote={saveNoteHandler} />;
-}
-
-class AddNote extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            title: '',
-            body: '',
-            archived: false,
-            character: 50,
-            isBodyEmpty: false,
-        };
-
-        autoBindReact(this);
-    }
-
-    onTitleChangeEventHandler(event) {
+    const onTitleChangeHandler = (event) => {
         if (event.target.value.length <= 50) {
-            this.setState((prevState) => ({
-                ...prevState,
-                title: event.target.value,
-                character: 50 - event.target.value.length,
-            }));
+            setTitle(event);
+            setCharacter(50 - event.target.value.length);
         }
-    }
+    };
 
-    onBodyChangeEventHandler(event) {
-        this.setState((prevState) => ({
-            ...prevState,
-            body: event.target.innerHTML,
-            isBodyEmpty: event.target.innerText ? false : true,
-        }));
-    }
+    const onBodyChangeHandler = (event) => {
+        setBody(event.target.innerHTML);
+        setBodyEmpty(!event.target.innerText);
+    };
 
-    onSubmitEventHandler(event) {
+    const onSubmitHandler = async (event) => {
         event.preventDefault();
-        if (!this.state.body.length) {
-            this.setState({ isBodyEmpty: true });
+        if (body.length) {
+            const { error } = await addNote({ title, body });
+            if (!error) navigate('/');
         } else {
-            this.props.onSaveNote({
-                title: this.state.title,
-                body: this.state.body,
-            });
+            setBodyEmpty(true);
         }
-    }
-
-    render() {
-        return (
-            <>
-                <TertiaryButton className="-ml-4 mb-4" onClick={() => history.back()}>
-                    <BackIcon />
-                    <p>Back</p>
-                </TertiaryButton>
-                <h2 className="list-title mb-8">Add new note</h2>
-                <form className="form" onSubmit={this.onSubmitEventHandler}>
-                    <div className="form-group">
-                        <label htmlFor="title">Note title</label>
-                        <input
-                            type="text"
-                            id="title"
-                            className="input-box"
-                            value={this.state.title}
-                            onChange={this.onTitleChangeEventHandler}
-                        />
-                        <span className="input-desc">
-                            Remaining characters: {this.state.character}
-                        </span>
+    };
+    return (
+        <>
+            <TertiaryButton className="-ml-4 mb-4" onClick={() => history.back()}>
+                <BackIcon />
+                <p>{translate[language].back}</p>
+            </TertiaryButton>
+            <h2 className="list-title mb-8">{translate[language].addNewNote}</h2>
+            <form className="form" onSubmit={onSubmitHandler}>
+                <div className="form-group">
+                    <label htmlFor="title">{translate[language].noteTitle}</label>
+                    <input
+                        type="text"
+                        id="title"
+                        className="input-box"
+                        value={title}
+                        onChange={onTitleChangeHandler}
+                    />
+                    <span className="input-desc">
+                        {translate[language].remainingCharacters}: {character}
+                    </span>
+                </div>
+                <div className="form-group">
+                    <label htmlFor="content" className={isBodyEmpty ? 'error-input' : ''}>
+                        {translate[language].writeYourNote}
+                    </label>
+                    <div
+                        id="content"
+                        className={`input-box input-box-body ${
+                            isBodyEmpty ? 'error-border-box' : ''
+                        }`}
+                        contentEditable
+                        onInput={onBodyChangeHandler}></div>
+                    <div className="error-message">
+                        {isBodyEmpty && translate[language].cannotEmpty}
                     </div>
-                    <div className="form-group">
-                        <label
-                            htmlFor="content"
-                            className={this.state.isBodyEmpty ? 'error-input' : ''}>
-                            Write your note
-                        </label>
-                        <div
-                            id="content"
-                            className={`input-box input-box-body ${
-                                this.state.isBodyEmpty ? 'error-border-box' : ''
-                            }`}
-                            contentEditable
-                            onInput={this.onBodyChangeEventHandler}></div>
-                        <div className="error-message">
-                            {this.state.isBodyEmpty && `Note contents cannot be empty!`}
-                        </div>
-                    </div>
-                    <div className="add-note">
-                        <PrimaryButton type="submit" className="add-note-button">
-                            <SaveIcon />
-                            <p>Save note</p>
-                        </PrimaryButton>
-                    </div>
-                </form>
-            </>
-        );
-    }
+                </div>
+                <div className="add-note">
+                    <PrimaryButton type="submit" className="add-note-button">
+                        <SaveIcon />
+                        <p>{translate[language].saveNote}</p>
+                    </PrimaryButton>
+                </div>
+            </form>
+        </>
+    );
 }
-
-AddNote.propTypes = {
-    onSaveNote: PropTypes.func.isRequired,
-};

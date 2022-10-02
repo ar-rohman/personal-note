@@ -1,89 +1,85 @@
-import React from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import autoBindReact from 'auto-bind/react';
-import { searchNote, getArchivedNotes, deleteNote, unarchiveNote } from '../utils/data';
+import React, { useState, useEffect, useContext } from 'react';
+import { Link } from 'react-router-dom';
+import { useSearch } from '../hooks/useSearch';
+import LocalContext from '../contexts/LocalContext';
+import { getArchivedNotes, deleteNote, unarchiveNote } from '../utils/network-data';
+import translate from '../utils/translate';
 import NoteItem from '../components/NoteItem';
 import NoteSearch from '../components/NoteSearch';
 import ForwardIcon from '../components/icons/ForwardIcon';
+import CardSkeleton from '../components/skeleton/CardSkeleton';
 
-export default function ArchivedNotePageWrapper() {
-    const [searchParams, setSearchParams] = useSearchParams();
-    const keyword = searchParams.get('keyword');
+export default function ArchivedNotePage() {
+    const [keyword, onSearch] = useSearch();
+    const [archivedNotes, setArchivedNotes] = useState([]);
+    const [notes, setNotes] = useState([]);
+    const [isLoading, setLoading] = useState(true);
+    const [fetch, setFetch] = useState(1);
+    const { language } = useContext(LocalContext);
 
-    const changeSearchParams = (keyword) => setSearchParams({ keyword });
+    const onDeleteHandler = async (id) => {
+        await deleteNote(id);
+        setFetch((prevSate) => prevSate + 1);
+    };
 
-    return <ArchivedNotePage keyword={keyword} onSearch={changeSearchParams} />;
-}
+    const onUnarchiveHandler = async (id) => {
+        await unarchiveNote(id);
+        setFetch((prevSate) => prevSate + 1);
+    };
 
-class ArchivedNotePage extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            notes: this.isSearched(),
-            keyword: props.keyword,
+    useEffect(() => {
+        const getNotes = async () => {
+            const { error, data } = await getArchivedNotes();
+            setLoading(error);
+            setArchivedNotes(data);
+            if (keyword) {
+                const filtered = data?.filter(({ title }) => title.toLowerCase().includes(keyword));
+                setNotes(filtered);
+            } else {
+                setNotes(data);
+            }
         };
 
-        autoBindReact(this);
-    }
+        getNotes();
+    }, [fetch]);
 
-    isSearched() {
-        if (this.props.keyword) {
-            return searchNote({ keyword: this.props.keyword, isArchived: true });
+    useEffect(() => {
+        if (keyword) {
+            const filtered = archivedNotes?.filter(({ title }) =>
+                title.toLowerCase().includes(keyword)
+            );
+            setNotes(filtered);
         } else {
-            return getArchivedNotes();
+            setNotes(archivedNotes);
         }
-    }
+    }, [keyword]);
 
-    onSearchHandler(event) {
-        const keyword = event.target.value.toLowerCase();
-        const search = searchNote({ keyword, isArchived: true });
-        this.setState({ notes: search, keyword });
-        this.props.onSearch(keyword);
-    }
-
-    onDeleteHandler(id) {
-        deleteNote(id);
-        this.setState({ notes: this.isSearched() });
-    }
-
-    onUnarchiveHandler(id) {
-        unarchiveNote(id);
-        this.setState({ notes: this.isSearched() });
-    }
-
-    render() {
-        const notes = this.state.notes;
-        return (
-            <>
-                <div className="top-nav-wrapper">
-                    <NoteSearch onSearch={this.onSearchHandler} keyword={this.state.keyword} />
-                    <Link to="/" className="top-nav-link">
-                        Active Note <ForwardIcon />
-                    </Link>
-                </div>
-                <h2 className="list-title mb-8">Archived Notes</h2>
-                <div className="list">
-                    {notes?.length ? (
-                        notes.map((note) => (
-                            <NoteItem
-                                key={note.id}
-                                onDelete={this.onDeleteHandler}
-                                onUnarchive={this.onUnarchiveHandler}
-                                {...note}
-                            />
-                        ))
-                    ) : (
-                        <p>No notes</p>
-                    )}
-                </div>
-            </>
-        );
-    }
+    return (
+        <>
+            <div className="top-nav-wrapper">
+                <NoteSearch onSearch={onSearch} keyword={keyword} />
+                <Link to="/" className="top-nav-link">
+                    <p>{translate[language].activeNotes}</p>
+                    <ForwardIcon />
+                </Link>
+            </div>
+            <h2 className="list-title  mb-8">{translate[language].archivedNotes}</h2>
+            <div className="list">
+                {isLoading ? (
+                    <CardSkeleton />
+                ) : notes?.length ? (
+                    notes.map((note) => (
+                        <NoteItem
+                            key={note.id}
+                            onDelete={onDeleteHandler}
+                            onUnarchive={onUnarchiveHandler}
+                            {...note}
+                        />
+                    ))
+                ) : (
+                    <p>{translate[language].noNotes}</p>
+                )}
+            </div>
+        </>
+    );
 }
-
-ArchivedNotePage.propTypes = {
-    keyword: PropTypes.string,
-    onSearch: PropTypes.func.isRequired,
-};

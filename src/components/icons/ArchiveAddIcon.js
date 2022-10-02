@@ -1,6 +1,6 @@
 import React from 'react';
 
-function ArchiveAddIcon() {
+export default function ArchiveAddIcon() {
     return (
         <svg
             width="20"
@@ -31,5 +31,3 @@ function ArchiveAddIcon() {
         </svg>
     );
 }
-
-export default ArchiveAddIcon;
